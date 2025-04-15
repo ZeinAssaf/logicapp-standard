@@ -1,21 +1,22 @@
 param storageName string = 'rgnew8e0d'
 param fileShareName string 
-param fileServiceName string
 param subnetId string
-//param virtualNetworks_vnet_sdc_test_project_externalid string = '/subscriptions/e540cb7c-7267-4ab3-8aff-86ae71c26a72/resourceGroups/rg-new/providers/Microsoft.Network/virtualNetworks/vnet-sdc-test-project/subnets/snet-sdc-test-project'
+param location string
+param keyvaultName string
 
-resource storageAccounts_rgnew8e0d_name_resource 'Microsoft.Storage/storageAccounts@2024-01-01' = {
+resource storageAccounts_resource 'Microsoft.Storage/storageAccounts@2024-01-01' = {
   name: storageName
-  location: 'swedencentral'
+  location: location
   sku: {
     name: 'Standard_LRS'
   }
   kind: 'StorageV2'
   properties: {
     defaultToOAuthAuthentication: true
-    publicNetworkAccess: 'disabled'
+    publicNetworkAccess: 'Enabled'
     allowCrossTenantReplication: false
     minimumTlsVersion: 'TLS1_2'
+    
     allowBlobPublicAccess: false
     allowSharedKeyAccess: true
     networkAcls: {
@@ -29,7 +30,7 @@ resource storageAccounts_rgnew8e0d_name_resource 'Microsoft.Storage/storageAccou
       ]
       ipRules: [
       ]
-      defaultAction: 'Deny'
+      defaultAction: 'Allow'
     }
     supportsHttpsTrafficOnly: true
     encryption: {
@@ -48,19 +49,14 @@ resource storageAccounts_rgnew8e0d_name_resource 'Microsoft.Storage/storageAccou
     accessTier: 'Hot'
   }
 }
-
-
-
 resource fileshare_service_resource 'Microsoft.Storage/storageAccounts/fileServices@2024-01-01' = {
-  parent: storageAccounts_rgnew8e0d_name_resource
-  name: fileServiceName
+  parent: storageAccounts_resource
+  name: 'default'
   properties: {
     protocolSettings: {
       smb: {}
     }
-    cors: {
-      corsRules: []
-    }
+    cors: {}
     shareDeleteRetentionPolicy: {
       enabled: true
       days: 7
@@ -68,12 +64,26 @@ resource fileshare_service_resource 'Microsoft.Storage/storageAccounts/fileServi
   }
 }
 
-resource fileshare_logicapp_resource 'Microsoft.Storage/storageAccounts/fileServices/shares@2024-01-01' = {
+resource fileshare_logicapp_resource 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-05-01' = {
   parent: fileshare_service_resource
   name: fileShareName
   properties: {
     accessTier: 'TransactionOptimized'
-    shareQuota: 102400
+    shareQuota: 1
     enabledProtocols: 'SMB'
   }
 }
+
+
+resource keyVault 'Microsoft.KeyVault/vaults@2024-12-01-preview' existing = {
+  name: keyvaultName
+}
+
+resource secret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+  parent: keyVault
+  name: 'StorageConnectionString'
+  properties: {
+    value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccounts_resource.name};AccountKey=${storageAccounts_resource.listKeys().keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+  }
+}
+

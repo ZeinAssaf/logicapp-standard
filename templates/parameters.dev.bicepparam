@@ -14,22 +14,19 @@ param logSpaceAnalyticsWorskspaceObject =  {
   retentionDays: 30
   dailyCapInGb:1
 }
-
 param applicationinsightObject =  {
   name: 'appi-sdc-testproject-dev'
   applicationType: 'web'
   retentionDays: 30
 }
-
 param appServicePlanObject ={ 
   name: 'asp-sdc-testproject-dev'
   sku: {
-    name: 'WorkflowStandard'
-    tier: 'WS1'
+    name: 'WS1'
+    tier: 'WorkflowStandard'
   }
   kind:'functionapp,workflowapp'
 }
-
 param vnetObject =  {
   name: 'vnet-sdc-testproject-dev'
   addressPrefixes:['10.0.0.0/16']
@@ -39,7 +36,6 @@ param subnetObject =  {
   parentVnetName: 'vnet-sdc-testproject-dev'
   addressPrefix: '10.0.0.0/27'
 }
-
 param storageAccountObject = {
   name: 'stsdctestprojectdev'
   sku: 'Standard_LRS'
@@ -48,11 +44,43 @@ param storageAccountObject = {
   enableHttpsTrafficOnly: true
   minTlsVersion: 'TLS1_2'
   fileShareName: 'fileshare-sdc-testproject-dev'
-  fileServiceName: 'fileservice-sdc-testproject-dev'
 }
-
-
-
 param logicApp =  {
   name: 'logic-sdc-testproject-dev'
+  appsettings:[
+        {
+          name: 'APP_KIND'
+          value: 'workflowapp'
+        }
+        {
+          name: 'AzureFunctionsJobHost__extensionBundle__id'
+          value: 'Microsoft.Azure.Functions.ExtensionBundle.Workflows'
+        }
+        {
+          name: 'AzureFunctionsJobHost__extensionBundle__version'
+          value: '[1.*, 2.0.0)'
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'dotnet'
+        }
+        {
+          name: 'WEBSITE_CONTENTSHARE'
+          value: 'adasd87e7'
+        }
+        {
+          name: 'WEBSITE_NODE_DEFAULT_VERSION'
+          value: '~18'
+        }
+      ]
 }
+
+param keyvaultObject =  {
+  name: 'kv-sdc-testproject-dev'
+}
+
+param tenantId =  '71c4f45c-272e-421a-b6cb-c5fb553eb61e'

@@ -1,5 +1,6 @@
 targetScope = 'subscription'
 
+param tenantId string
 param resourceGroupName string
 param tags object
 param location string
@@ -10,10 +11,22 @@ param subnetObject object
 param appServicePlanObject object
 param storageAccountObject object
 param logicApp object
+param keyvaultObject object
+var logicAppConnectionstrings =[
+  {
+    name: 'AzureWebJobsStorage'
+    value: '@Microsoft.KeyVault(SecretUri=https://${keyvault_resource.outputs.uri}/secrets/StorageConnectionString/)}'
+  }
+  {
+    name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+    value: '@Microsoft.KeyVault(SecretUri=https://${keyvault_resource.outputs.uri}/secrets/StorageConnectionString/)}'
+  }
+  {
+    name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+    value: applicationinsight_resource.outputs.instrumentationKey
+  }
+]
 
-
-
-//var vnetIdPrefix = '/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.Network/virtualNetworks/'
 
 @description('Create the resource group')
 resource resource_group 'Microsoft.Resources/resourceGroups@2024-11-01' = {
@@ -82,7 +95,21 @@ module storageaccount_resource 'storageaccount_template.bicep' = {
   params:{
     storageName: storageAccountObject.name
     fileShareName: storageAccountObject.fileShareName
-    fileServiceName: storageAccountObject.fileServiceName
+    subnetId: subnet_resource.outputs.id
+    location: resource_group.location
+    keyvaultName:keyvault_resource.outputs.name
+  }
+  scope: resource_group
+}
+
+@description('Create the key vault for the logic app standard')
+module keyvault_resource 'keyvault_template.bicep' = {
+  name: keyvaultObject.name
+  params:{
+    name: keyvaultObject.name
+    location: resource_group.location
+    tenantId: tenantId
+    tags: tags
     subnetId: subnet_resource.outputs.id
   }
   scope: resource_group
@@ -96,6 +123,18 @@ module logicapp_standard 'logicapp-standard_template.bicep' = {
     location: location
     aspId: appserviceplan_resource.outputs.id
     subnetId: subnet_resource.outputs.id
+    appsettings:[...logicApp.appSettings,...logicAppConnectionstrings] 
   }
 scope: resource_group
+}
+
+
+
+resource appSettings 'Microsoft.Web/sites/config@2022-03-01' = {
+  parent: logicapp_standard.id
+  name: 'appsettings'
+  properties: {
+    'MY_SETTING': 'MyValue'
+    'ANOTHER_SETTING': 'AnotherValue'
+  }
 }

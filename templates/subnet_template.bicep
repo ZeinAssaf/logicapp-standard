@@ -15,12 +15,16 @@ resource subnet_resource 'Microsoft.Network/virtualNetworks/subnets@2024-05-01' 
       {
         service: 'Microsoft.Storage'
       }
+      {
+        service: 'Microsoft.KeyVault'
+      }
     ]
     delegations: [
       {
         name: 'delegation'
         properties: {
           serviceName: 'Microsoft.Web/serverfarms'
+          
         }
         type: 'Microsoft.Network/virtualNetworks/subnets/delegations'
       }
