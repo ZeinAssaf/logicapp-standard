@@ -8,11 +8,7 @@ resource appserviceplan 'Microsoft.Web/serverfarms@2024-04-01' = {
   location: location
   sku: {
     name: sku.name
-    capacity: sku.capacity
     tier:  sku.tier
-    family: sku.family
-    size: sku.size
-    
   }
   kind: appServicePlanKind
   properties: {

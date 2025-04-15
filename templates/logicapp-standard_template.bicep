@@ -1,6 +1,6 @@
 param name string 
 param aspId string 
-param vnetId string 
+param subnetId string 
 param location string 
 
 resource logicapp_standard_resource 'Microsoft.Web/sites@2024-04-01' = {
@@ -58,7 +58,7 @@ resource logicapp_standard_resource 'Microsoft.Web/sites@2024-04-01' = {
     redundancyMode: 'None'
     publicNetworkAccess: 'Disabled'
     storageAccountRequired: false
-    virtualNetworkSubnetId: '${vnetId}/subnets/snet-sdc-test-project'
+    virtualNetworkSubnetId: subnetId
     keyVaultReferenceIdentity: 'SystemAssigned'
   }
 }
@@ -172,7 +172,7 @@ resource sites_logic_sdc_test_project_name_02a5f68e_b864_4f88_829a_9e81b542f8a5_
   parent: logicapp_standard_resource
   name: '02a5f68e-b864-4f88-829a-9e81b542f8a5_snet-sdc-test-project'
   properties: {
-    vnetResourceId: '${vnetId}/subnets/snet-sdc-test-project'
+    vnetResourceId: subnetId
     isSwift: true
   }
 }
