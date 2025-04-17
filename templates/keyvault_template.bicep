@@ -23,12 +23,13 @@ resource azure_key_vault 'Microsoft.KeyVault/vaults@2024-12-01-preview' = {
         }
       ]
     }
+
     enabledForDeployment: false
     enabledForDiskEncryption: false
     enabledForTemplateDeployment: false
     enableSoftDelete: true
     softDeleteRetentionInDays: 30
-    enableRbacAuthorization: false
+    enableRbacAuthorization: true
     provisioningState: 'Succeeded'
     publicNetworkAccess: 'disabled'
     enablePurgeProtection: true
@@ -37,3 +38,4 @@ resource azure_key_vault 'Microsoft.KeyVault/vaults@2024-12-01-preview' = {
 
 output uri string = azure_key_vault.properties.vaultUri
 output name string= azure_key_vault.name
+output id string = azure_key_vault.id

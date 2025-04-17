@@ -34,7 +34,7 @@ param vnetObject =  {
 param subnetObject =  {
   name: 'subnet-sdc-testproject-dev'
   parentVnetName: 'vnet-sdc-testproject-dev'
-  addressPrefix: '10.0.0.0/27'
+  addressPrefix: '10.0.0.0/26'
 }
 param storageAccountObject = {
   name: 'stsdctestprojectdev'
@@ -80,7 +80,7 @@ param logicApp =  {
 }
 
 param keyvaultObject =  {
-  name: 'kv-sdc-testproject-dev'
+  name: 'kv-sdc-testproject-dev1'
 }
 
 param tenantId =  '71c4f45c-272e-421a-b6cb-c5fb553eb61e'

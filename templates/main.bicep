@@ -15,11 +15,11 @@ param keyvaultObject object
 var logicAppConnectionstrings =[
   {
     name: 'AzureWebJobsStorage'
-    value: '@Microsoft.KeyVault(SecretUri=https://${keyvault_resource.outputs.uri}/secrets/StorageConnectionString/)}'
-  }
+    value: '@Microsoft.KeyVault(SecretUri=https://${keyvault_resource.outputs.uri}/secrets/StorageConnectionString)}'
+  }//https://kv-sdc-testproject-dev1.vault.azure.net/secrets/StorageConnectionString/
   {
     name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-    value: '@Microsoft.KeyVault(SecretUri=https://${keyvault_resource.outputs.uri}/secrets/StorageConnectionString/)}'
+    value: '@Microsoft.KeyVault(SecretUri=https://${keyvault_resource.outputs.uri}/secrets/StorageConnectionString)}'
   }
   {
     name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
@@ -123,18 +123,27 @@ module logicapp_standard 'logicapp-standard_template.bicep' = {
     location: location
     aspId: appserviceplan_resource.outputs.id
     subnetId: subnet_resource.outputs.id
-    appsettings:[...logicApp.appSettings,...logicAppConnectionstrings] 
+    //appsettings:[...logicApp.appSettings,...logicAppConnectionstrings] 
   }
 scope: resource_group
 }
 
-
-
-resource appSettings 'Microsoft.Web/sites/config@2022-03-01' = {
-  parent: logicapp_standard.id
-  name: 'appsettings'
-  properties: {
-    'MY_SETTING': 'MyValue'
-    'ANOTHER_SETTING': 'AnotherValue'
+module logicapp_role_assignement 'role_assignement_template.bicep' = {
+  name: 'logicapp_role_assignement'
+  params:{
+    logicAppId: logicapp_standard.outputs.id
+    logicappPrincipalId: logicapp_standard.outputs.principalId
+    keyvaultName: keyvault_resource.outputs.name
   }
+  scope: resource_group
+
+}
+
+module logicapp_appsettings_resource 'logicapp_settings_template.bicep' = {
+  name: 'logicapp_appsettings'
+  params:{
+    appsettings:[...logicApp.appSettings,...logicAppConnectionstrings] 
+    logicappname:logicApp.name
+  }
+  scope: resource_group
 }

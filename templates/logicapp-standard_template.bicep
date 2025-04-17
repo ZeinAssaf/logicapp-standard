@@ -2,7 +2,7 @@ param name string
 param aspId string 
 param subnetId string 
 param location string 
-param appsettings array
+//param appsettings array
 
 resource logicapp_standard_resource 'Microsoft.Web/sites@2024-04-01' = {
   name: name
@@ -44,7 +44,7 @@ resource logicapp_standard_resource 'Microsoft.Web/sites@2024-04-01' = {
       http20Enabled: false
       functionAppScaleLimit: 0
       minimumElasticInstanceCount: 1
-      appSettings: appsettings
+      //appSettings: appsettings
     }
     scmSiteAlsoStopped: false
     clientAffinityEnabled: false
@@ -98,15 +98,10 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
 
 
 
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(logicapp_standard_resource.id, 'KeyVaultSecretsUser') 
-  properties: {
-    roleDefinitionId: keyVault.id 
-    principalId: logicapp_standard_resource.identity.principalId 
-  }
-}
 
-output id string = logicapp_standard_resource.identity.principalId
+
+output principalId string = logicapp_standard_resource.identity.principalId
+output id string = logicapp_standard_resource.id
 
 
 
