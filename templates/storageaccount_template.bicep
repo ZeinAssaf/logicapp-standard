@@ -1,6 +1,6 @@
 param storageName string = 'rgnew8e0d'
 param fileShareName string 
-param subnetId string
+//param subnetId string
 param location string
 param keyvaultName string
 
@@ -13,7 +13,7 @@ resource storageAccounts_resource 'Microsoft.Storage/storageAccounts@2024-01-01'
   kind: 'StorageV2'
   properties: {
     defaultToOAuthAuthentication: true
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: 'Disabled'
     allowCrossTenantReplication: false
     minimumTlsVersion: 'TLS1_2'
     
@@ -21,16 +21,16 @@ resource storageAccounts_resource 'Microsoft.Storage/storageAccounts@2024-01-01'
     allowSharedKeyAccess: true
     networkAcls: {
       bypass: 'AzureServices'
-      virtualNetworkRules: [
-        {
-          id: subnetId
-          action: 'Allow'
-          state: 'Succeeded'
-        }
-      ]
+      // virtualNetworkRules: [
+      //   {
+      //     id: subnetId
+      //     action: 'Allow'
+      //     state: 'Succeeded'
+      //   }
+      // ]
       ipRules: [
       ]
-      defaultAction: 'Allow'
+      defaultAction: 'Deny'
     }
     supportsHttpsTrafficOnly: true
     encryption: {
@@ -87,3 +87,4 @@ resource secret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   }
 }
 
+output id string = storageAccounts_resource.id

@@ -13,13 +13,14 @@ resource azure_key_vault 'Microsoft.KeyVault/vaults@2024-12-01-preview' = {
       name: 'standard'
     }
     tenantId: tenantId
-    accessPolicies:[]
+    accessPolicies: []
+    
     networkAcls: {
       bypass: 'AzureServices'
       virtualNetworkRules: [
         {
           id: subnetId
-          ignoreMissingVnetServiceEndpoint: false      
+          ignoreMissingVnetServiceEndpoint: false
         }
       ]
     }
@@ -28,6 +29,7 @@ resource azure_key_vault 'Microsoft.KeyVault/vaults@2024-12-01-preview' = {
     enabledForDiskEncryption: false
     enabledForTemplateDeployment: false
     enableSoftDelete: true
+    createMode:'default'
     softDeleteRetentionInDays: 30
     enableRbacAuthorization: true
     provisioningState: 'Succeeded'
@@ -37,5 +39,5 @@ resource azure_key_vault 'Microsoft.KeyVault/vaults@2024-12-01-preview' = {
 }
 
 output uri string = azure_key_vault.properties.vaultUri
-output name string= azure_key_vault.name
+output name string = azure_key_vault.name
 output id string = azure_key_vault.id

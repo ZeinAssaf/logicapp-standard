@@ -1,7 +1,7 @@
 using './main.bicep'
 
 param location =  'swedencentral'
-param resourceGroupName =  'rg-sdc-testproject-dev'
+param resourceGroupName =  'rg-sdc-testproject-dev1'
 
 param tags =  {
   environment: 'dev'
@@ -35,6 +35,11 @@ param subnetObject =  {
   name: 'subnet-sdc-testproject-dev'
   parentVnetName: 'vnet-sdc-testproject-dev'
   addressPrefix: '10.0.0.0/26'
+}
+param subnetObjectKeyvault =  {
+  name: 'subnet-sdc-kvtestproject-dev'
+  parentVnetName: 'vnet-sdc-testproject-dev'
+  addressPrefix: '10.0.0.64/27'
 }
 param storageAccountObject = {
   name: 'stsdctestprojectdev'
@@ -80,7 +85,7 @@ param logicApp =  {
 }
 
 param keyvaultObject =  {
-  name: 'kv-sdc-testproject-dev1'
+  name: 'kv-sdc-testproject-dev2'
 }
 
 param tenantId =  '71c4f45c-272e-421a-b6cb-c5fb553eb61e'
